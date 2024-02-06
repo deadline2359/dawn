@@ -1,0 +1,173 @@
+{{ 'section-article-generator.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{% assign output = false %}
+
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <div class="article-generator page-width page-width--narrow section-{{ section.id }}-padding">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="title title-wrapper--no-top-margin inline-richtext {{ section.settings.heading_size }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+        {{ section.settings.heading }}
+      </h2>
+    {%- else -%}
+      <h2 class="visually-hidden">{{ 'templates.article.generator.title' | t }}</h2>
+    {%- endif -%}
+    {%- liquid
+      assign article_generator_class = 'isolate'
+      if settings.animations_reveal_on_scroll
+        assign article_generator_class = 'isolate scroll-trigger animate--slide-in'
+      endif
+    -%}
+
+    <div class="generator-outputs">
+      <div class="generator__output">
+        <p class="generator__output-text">
+          {%- if output != blank -%} 
+            {{output}} 
+          {%- else -%}
+            {{ 'templates.article.generator.output' | t }}
+          {%- endif -%}
+        </p>
+      </div>
+    </div>
+
+    {%- form 'contact', id: 'ArticleGenerator', class: article_generator_class -%}
+      <div class="generator__fields">
+        <div class="field">
+          <input
+            class="field__input"
+            type="text"
+            id="ArticleGenerator-wine"
+            name="article[{{ 'templates.article.generator.wine' | t }}]"
+            value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+            placeholder="{{ 'templates.article.generator.wine' | t }}"
+          >
+          <label class="field__label" for="ArticleGenerator-wine">{{ 'templates.article.generator.wine' | t }}</label>
+        </div>
+        <div class="field">
+          <input
+            class="field__input"
+            type="text"
+            id="ArticleGenerator-region"
+            name="article[{{ 'templates.article.generator.region' | t }}]"
+            value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+            placeholder="{{ 'templates.article.generator.region' | t }}"
+          >
+          <label class="field__label" for="ArticleGenerator-region">{{ 'templates.article.generator.region' | t }}</label>
+        </div>
+        <div class="field">
+          <input
+            class="field__input"
+            type="text"
+            id="ArticleGenerator-vineyard"
+            name="article[{{ 'templates.article.generator.vineyard' | t }}]"
+            value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+            placeholder="{{ 'templates.article.generator.vineyard' | t }}"
+          >
+          <label class="field__label" for="ArticleGenerator-vineyard">{{ 'templates.article.generator.vineyard' | t }}</label>
+        </div>
+        <div class="field">
+          <select id="ArticleGenerator-tone" name="article[{{ 'templates.article.generator.tone' | t }}]">
+            <option>Positive Tone</option>
+            <option>Negative Tone</option>
+            <option>Neutral Tone</option>  
+          </select>
+          
+          {% comment %} <label class="field__label" for="ArticleGenerator-tone">{{ 'templates.article.generator.tone' | t }}</label> {% endcomment %}
+        </div>
+      </div>
+      <div class="generate__button">
+        <button type="submit" class="button">
+          {{ 'templates.article.generator.generate' | t }}
+        </button>
+      </div>
+    {%- endform -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.article-generator.name",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "default": "Article Generator",
+      "label": "Heading"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_size.options__1.label"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.all.heading_size.options__2.label"
+        },
+        {
+          "value": "h0",
+          "label": "t:sections.all.heading_size.options__3.label"
+        }
+      ],
+      "default": "h1",
+      "label": "t:sections.all.heading_size.label"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.article-generator.presets.name"
+    }
+  ]
+}
+{% endschema %}
